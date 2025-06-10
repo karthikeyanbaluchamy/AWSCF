@@ -33,3 +33,11 @@ jobs:
 
       - name: lsit all s3 buckets
         run: aws s3 ls
+
+      - name: Deploy CloudFormation stack
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: ${{ vars.STACK_NAME }}
+          template: bucket.yaml
+          no-fail-on-empty-changeset: "1"
+          capabilities: CAPABILITY_NAMED_IAM
