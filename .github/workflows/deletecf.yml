@@ -33,7 +33,7 @@ jobs:
 
       - name: Delete CloudFormation stack
         run: |
-          STACK_NAME="Deploy Test"
+          STACK_NAME="${{ vars.STACK_NAME }}"
           echo "Deleting stack: $STACK_NAME"
           aws cloudformation delete-stack --stack-name "$STACK_NAME"
 
