@@ -1,0 +1,53 @@
+name: Delete CloudFormation Stack
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+      stack:
+        description: 'Stack to delete'
+        required: true
+        default: 'Deploy Test'
+        type: string
+
+permissions:
+  id-token: write   # Required for OIDC token
+  contents: read
+
+jobs:
+  delete_stack:
+    runs-on: [self-hosted-vm, Linux]
+    container: 'ubuntu:20.04'
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y git jq curl zip unzip
+
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip -o awscliv2.zip
+          ./aws/install
+          aws --version
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/GitHubActions-Admin-Role
+          role-session-name: GitHubActionsDelete
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Delete CloudFormation stack
+        run: |
+          echo "Deleting CloudFormation stack: ${{ inputs.stack }}"
+          aws cloudformation delete-stack --stack-name "${{ inputs.stack }}"
+          echo "Waiting for stack deletion to complete..."
+          aws cloudformation wait stack-delete-complete --stack-name "${{ inputs.stack }}"
+          echo "Stack deleted successfully."
