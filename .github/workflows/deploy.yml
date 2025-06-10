@@ -2,30 +2,14 @@ name: Deploy Test
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Deployment environment'
-        required: true
-        default: 'dev'
-        type: choice
-        options:
-          - dev
-      stack:
-        description: 'Stack to deploy'
-        required: true
-        default: 'all'
-        type: choice
-        options:
-          - all
+
 permissions:
   id-token: write   # This is required for requesting the JWT
   contents: read
 
 jobs:
   deploy:
-    runs-on: [self-hosted-vm, Linux]
-    container: 'ubuntu:20.04'
-    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
     steps:
       - name: Install GIT
         run: apt-get update && apt-get install -y git jq curl zip
@@ -47,14 +31,5 @@ jobs:
           role-session-name: GitHubActions
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: List all S3 Buckets
+      - name: lsit all s3 buckets
         run: aws s3 ls
-
-      - name: Deploy CloudFormation stack
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
-        if: inputs.stack == 'all' || inputs.stack == 'application'
-        with:
-          name: ${{ vars.STACK_NAME }}
-          template: bucket.yaml
-          no-fail-on-empty-changeset: "1"
-          capabilities: CAPABILITY_NAMED_IAM
