@@ -28,7 +28,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: test-lambda
-      Handler: index.handler
+      Handler: lambda_test.lambda_handler
       Runtime: python3.12
       Code:
         S3Bucket: !Ref LambdaS3Bucket
