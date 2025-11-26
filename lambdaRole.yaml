@@ -11,24 +11,57 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: 
+              Service:
                 - cloudformation.amazonaws.com
             Action: sts:AssumeRole
+
       Policies:
         - PolicyName: CFNBasicExecutionPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
+
+              # ---- LAMBDA PERMISSIONS ----
               - Effect: Allow
                 Action:
                   - lambda:CreateFunction
+                  - lambda:UpdateFunctionCode
                   - lambda:DeleteFunction
                   - lambda:GetFunction
                   - lambda:ListFunctions
                   - lambda:UpdateFunctionConfiguration
+                  - lambda:PutFunctionEventInvokeConfig
                   - lambda:AddPermission
                   - lambda:RemovePermission
+                Resource: "*"
+
+              # ---- SNS PERMISSIONS ----
+              - Effect: Allow
+                Action:
                   - sns:Subscribe
                   - sns:Unsubscribe
                   - sns:ListSubscriptions
+                Resource: "*"
+
+              # ---- IAM FOR LAMBDA EXECUTION ROLE ----
+              - Effect: Allow
+                Action:
+                  - iam:CreateRole
+                  - iam:PutRolePolicy
+                  - iam:AttachRolePolicy
+                  - iam:PassRole
+                Resource: "*"
+
+              # ---- S3 ACCESS FOR LAMBDA ZIP ----
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: "*"
+
+              # ---- LOGS (LAMBDA CREATES LOG GROUPS) ----
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
                 Resource: "*"
