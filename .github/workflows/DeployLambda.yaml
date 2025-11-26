@@ -34,3 +34,15 @@ jobs:
     - name: Upload Lambda zip to S3
       run: |
         aws s3 cp lambda.zip s3://test123lamd/lambda.zip
+        
+    # ---------------- DEPLOY CLOUDFORMATION STACK ----------------
+    - name: Deploy CloudFormation Stack
+      run: |
+        aws cloudformation deploy \
+          --template-file cloudformation/laDeploy.yaml \
+          --stack-name test-lambda-stack \
+          --capabilities CAPABILITY_NAMED_IAM \
+          --role-arn arn:aws:iam::905418049972:role/CFN-Lamdda \
+          --parameter-overrides \
+              LambdaS3Bucket=test123lamd \
+              LambdaS3Key=lambda.zip
