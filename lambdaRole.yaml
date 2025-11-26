@@ -50,6 +50,7 @@ Resources:
                   - iam:PutRolePolicy
                   - iam:AttachRolePolicy
                   - iam:PassRole
+                  - iam:GetRole
                 Resource: "*"
 
               # ---- S3 ACCESS FOR LAMBDA ZIP ----
