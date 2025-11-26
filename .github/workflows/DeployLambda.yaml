@@ -39,7 +39,7 @@ jobs:
     - name: Deploy CloudFormation Stack
       run: |
         aws cloudformation deploy \
-          --template-file cloudformation/laDeploy.yaml \
+          --template-file laDeploy.yaml \
           --stack-name test-lambda-stack \
           --capabilities CAPABILITY_NAMED_IAM \
           --role-arn arn:aws:iam::905418049972:role/CFN-Lamdda \
