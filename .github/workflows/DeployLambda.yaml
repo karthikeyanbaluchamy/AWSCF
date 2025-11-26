@@ -1,0 +1,38 @@
+name: Deploy Lambda via CloudFormation
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # ---------------- CHECKOUT ----------------
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    # ---------------- AWS OIDC AUTH ----------------
+    - name: Configure AWS credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::905418049972:role/Test-Lambda
+        aws-region: us-east-1
+
+    # ---------------- ZIP LAMBDA CODE ----------------
+    - name: Package Lambda Function
+      run: |
+        cd src
+        zip ../lambda.zip lambda_test.py
+        cd ..
+
+    # ---------------- UPLOAD TO S3 ----------------
+    - name: Upload Lambda zip to S3
+      run: |
+        aws s3 cp lambda.zip s3://test123lamd/lambda.zip
